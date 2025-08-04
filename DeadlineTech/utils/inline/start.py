@@ -34,7 +34,7 @@ def private_panel(_):
             InlineKeyboardButton(text=_["S_B_4"], callback_data="settings_back_helper")
         ],
 
-        [
+       ''' [
             InlineKeyboardButton(text=_["S_B_10"], user_id=config.OWNER_ID),
             InlineKeyboardButton(text=_["S_B_9"], url=config.SUPPORT_CHAT)
             
@@ -42,6 +42,6 @@ def private_panel(_):
         [
             InlineKeyboardButton(text=_["S_B_7"], url=config.SUPPORT_CHANNEL), 
             InlineKeyboardButton(text=_["S_B_5"], url="https://github.com/DeadlineTech/music")
-        ]
+        ] '''
     ]
     return buttons
