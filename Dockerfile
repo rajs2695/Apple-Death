@@ -21,4 +21,3 @@ RUN pip3 install --no-cache-dir -U -r requirements.txt
 RUN chmod +x /app/start
 
 CMD ["bash", "-c", "source ~/.bashrc && bash start"]
-RUN python keep_alive.py
