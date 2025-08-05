@@ -100,6 +100,5 @@ async def init():
 
 if __name__ == "__main__":
     keep_alive()
-    set_webhook()
     asyncio.get_event_loop().run_until_complete(init())
     
