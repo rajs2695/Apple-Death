@@ -7,7 +7,7 @@ from pytgcalls.exceptions import NoActiveGroupCall
 
 import config
 from DeadlineTech import Apple, Resso, SoundCloud, Spotify, Telegram, YouTube, app
-from DeadlineTech.core.call import SHUKLA
+from DeadlineTech.core.call import Anony
 from DeadlineTech.utils import seconds_to_min, time_to_seconds
 from DeadlineTech.utils.channelplay import get_channeplayCB
 from DeadlineTech.utils.decorators.language import languageCB
