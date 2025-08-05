@@ -1,5 +1,3 @@
-# Powered By Team DeadlineTech
-
 import random
 import string
 
@@ -9,7 +7,7 @@ from pytgcalls.exceptions import NoActiveGroupCall
 
 import config
 from DeadlineTech import Apple, Resso, SoundCloud, Spotify, Telegram, YouTube, app
-from DeadlineTech.core.call import Anony
+from DeadlineTech.core.call import SHUKLA
 from DeadlineTech.utils import seconds_to_min, time_to_seconds
 from DeadlineTech.utils.channelplay import get_channeplayCB
 from DeadlineTech.utils.decorators.language import languageCB
@@ -28,18 +26,8 @@ from config import BANNED_USERS, lyrical
 
 
 @app.on_message(
-    filters.command(
-        [
-            "play",
-            "vplay",
-            "cplay",
-            "cvplay",
-            "playforce",
-            "vplayforce",
-            "cplayforce",
-            "cvplayforce",
-        ]
-    )
+   filters.command(["play", "vplay", "cplay", "cvplay", "playforce", "vplayforce", "cplayforce", "cvplayforce"] ,prefixes=["/", "!", "%", ",", "", ".", "@", "#"])
+            
     & filters.group
     & ~BANNED_USERS
 )
@@ -69,6 +57,7 @@ async def play_commnd(
         if message.reply_to_message
         else None
     )
+
     video_telegram = (
         (message.reply_to_message.video or message.reply_to_message.document)
         if message.reply_to_message
@@ -165,7 +154,8 @@ async def play_commnd(
                         config.PLAYLIST_FETCH_LIMIT,
                         message.from_user.id,
                     )
-                except:
+                except Exception as e:
+                    print(e)
                     return await mystic.edit_text(_["play_3"])
                 streamtype = "playlist"
                 plist_type = "yt"
@@ -174,18 +164,28 @@ async def play_commnd(
                 else:
                     plist_id = url.split("=")[1]
                 img = config.PLAYLIST_IMG_URL
-                cap = _["play_9"]
-            else:
-                try:
-                    details, track_id = await YouTube.track(url)
-                except:
-                    return await mystic.edit_text(_["play_3"])
+                cap = _["play_10"]
+            elif "https://youtu.be" in url:
+                videoid = url.split("/")[-1].split("?")[0]
+                details, track_id = await YouTube.track(f"https://www.youtube.com/watch?v={videoid}")
                 streamtype = "youtube"
                 img = details["thumb"]
-                cap = _["play_10"].format(
+                cap = _["play_11"].format(
                     details["title"],
                     details["duration_min"],
                 )
+            else:
+                try:
+                    details, track_id = await YouTube.track(url)
+                except Exception as e:
+                    print(e)
+                    return await mystic.edit_text(_["play_3"])
+                streamtype = "youtube"
+                img = details["thumb"]
+                cap = _["play_11"].format(
+                    details["title"],
+                    details["duration_min"],
+                                  )
         elif await Spotify.valid(url):
             spotify = True
             if not config.SPOTIFY_CLIENT_ID and not config.SPOTIFY_CLIENT_SECRET:
@@ -259,10 +259,38 @@ async def play_commnd(
             img = details["thumb"]
             cap = _["play_10"].format(details["title"], details["duration_min"])
         elif await SoundCloud.valid(url):
-            return await mystic.edit_text("❌ SoundCloud streaming and downloading is currently disabled.")
+            try:
+                details, track_path = await SoundCloud.download(url)
+            except:
+                return await mystic.edit_text(_["play_3"])
+            duration_sec = details["duration_sec"]
+            if duration_sec > config.DURATION_LIMIT:
+                return await mystic.edit_text(
+                    _["play_6"].format(
+                        config.DURATION_LIMIT_MIN,
+                        app.mention,
+                    )
+                )
+            try:
+                await stream(
+                    _,
+                    mystic,
+                    user_id,
+                    details,
+                    chat_id,
+                    user_name,
+                    message.chat.id,
+                    streamtype="soundcloud",
+                    forceplay=fplay,
+                )
+            except Exception as e:
+                ex_type = type(e).__name__
+                err = e if ex_type == "AssistantErr" else _["general_2"].format(ex_type)
+                return await mystic.edit_text(err)
+            return await mystic.delete()
         else:
             try:
-                await Anony.stream_call(url)
+                await SHUKLA.stream_call(url)
             except NoActiveGroupCall:
                 await mystic.edit_text(_["black_9"])
                 return await app.send_message(
@@ -303,8 +331,7 @@ async def play_commnd(
             query = query.replace("-v", "")
         try:
             details, track_id = await YouTube.track(query)
-        except Exception as ex:
-            print(ex)
+        except:
             return await mystic.edit_text(_["play_3"])
         streamtype = "youtube"
     if str(playmode) == "Direct":
@@ -406,6 +433,7 @@ async def play_commnd(
                 )
                 return await play_logs(message, streamtype=f"URL Searched Inline")
 
+
 @app.on_callback_query(filters.regex("MusicStream") & ~BANNED_USERS)
 @languageCB
 async def play_music(client, CallbackQuery, _):
@@ -475,8 +503,8 @@ async def play_music(client, CallbackQuery, _):
     return await mystic.delete()
 
 
-@app.on_callback_query(filters.regex("AnonymousAdmin") & ~BANNED_USERS)
-async def anonymous_check(client, CallbackQuery):
+@app.on_callback_query(filters.regex("SHUKLAmousAdmin") & ~BANNED_USERS)
+async def SHUKLAmous_check(client, CallbackQuery):
     try:
         await CallbackQuery.answer(
             "» ʀᴇᴠᴇʀᴛ ʙᴀᴄᴋ ᴛᴏ ᴜsᴇʀ ᴀᴄᴄᴏᴜɴᴛ :\n\nᴏᴘᴇɴ ʏᴏᴜʀ ɢʀᴏᴜᴘ sᴇᴛᴛɪɴɢs.\n-> ᴀᴅᴍɪɴɪsᴛʀᴀᴛᴏʀs\n-> ᴄʟɪᴄᴋ ᴏɴ ʏᴏᴜʀ ɴᴀᴍᴇ\n-> ᴜɴᴄʜᴇᴄᴋ ᴀɴᴏɴʏᴍᴏᴜs ᴀᴅᴍɪɴ ᴘᴇʀᴍɪssɪᴏɴs.",
@@ -486,7 +514,7 @@ async def anonymous_check(client, CallbackQuery):
         pass
 
 
-@app.on_callback_query(filters.regex("AnonyPlaylists") & ~BANNED_USERS)
+@app.on_callback_query(filters.regex("SHUKLAPlaylists") & ~BANNED_USERS)
 @languageCB
 async def play_playlists_command(client, CallbackQuery, _):
     callback_data = CallbackQuery.data.strip()
