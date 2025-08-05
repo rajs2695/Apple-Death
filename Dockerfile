@@ -17,6 +17,7 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | b
 WORKDIR /app
 COPY . /app/
 
+RUN pip install --upgrade pip
 RUN pip3 install --no-cache-dir -U -r requirements.txt
 RUN chmod +x /app/start
 
